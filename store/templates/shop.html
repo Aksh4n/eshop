@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<script type="text/javascript">
+    var user = '{{request.user}}'
+
+    function getToken(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getToken('csrftoken')
+
+    function getCookie(name) {
+        // Split cookie string and get all individual name=value pairs in an array
+        var cookieArr = document.cookie.split(";");
+
+        // Loop through the array elements
+        for(var i = 0; i < cookieArr.length; i++) {
+            var cookiePair = cookieArr[i].split("=");
+
+            /* Removing whitespace at the beginning of the cookie name
+            and compare it with the given string */
+            if(name == cookiePair[0].trim()) {
+                // Decode the cookie value and return
+                return decodeURIComponent(cookiePair[1]);
+            }
+        }
+
+        // Return null if not found
+        return null;
+    }
+    var cart = JSON.parse(getCookie('cart'))
+
+    if (cart == undefined){
+        cart = {}
+        console.log('Cart Created!', cart)
+        document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
+    }
+    console.log('Cart:', cart)
+
+</script>
+<script>
+  function reloadFunction(){
+   $("#cart-total").load(location.href + " #cart-total");
+ console.log('cart-total works');
+  }
+</script>
+
+<br>
+<br>
+<br>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <div class="container px-4 px-lg-5">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+              <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                      <li><a class="dropdown-item" href="#!">All Products</a></li>
+                      <li><hr class="dropdown-divider" /></li>
+                      <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                      <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+                  </ul>
+              </li>
+          </ul>
+              <button class="btn btn-outline-dark"  data-bs-toggle="modal" data-bs-target="#cart">
+                  <i class="bi-cart-fill me-1"></i>
+                  Cart
+                  <span id="cart-total" class="badge bg-dark text-white ms-1 rounded-pill" style="font-size:medium ;">{{cartItems}}</span>
+              </button>
+      </div>
+  </div>
+</nav>
+<div id="cart" class="modal fade " tabindex="-1">
+    <div  class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Modal title</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            
+            <section   class="h-100" style="background-color: #eee;">
+                <div  class="container h-100 py-5">
+                  <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="col-10">
+              
+                      <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
+                        <div>
+                          <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
+                                class="fas fa-angle-down mt-1"></i></a></p>
+                        </div>
+                      </div>
+                      {% for item in items %}
+
+                      <div  class="card rounded-3 mb-4">
+                        <div class="card-body p-4">
+                          <div class="row d-flex justify-content-between align-items-center">
+                            <div class="col-md-2 col-lg-2 col-xl-2">
+                              <img
+                                src="{{item.product.imageURL}}"
+                                class="img-fluid rounded-3" alt="{{item.product.name}}">
+                            </div>
+                            
+                            <div class="col-md-3 col-lg-3 col-xl-3">
+                              <p class="lead fw-normal mb-2">{{item.product.name}}</p>
+                              <form id="{{item.product.name}}" action="{% url 'getvar' %}" method="post">
+                                {% csrf_token %}
+                              {% for o in item.product.option_set.all %}
+
+                              <p  id="t{{item.product.id}}">
+                                <span style="font-weight:bold ;" class="text-muted">options: </span>
+  
+                                <select   name="option" class="form-select">
+                                  <option value="{{o.op1}}">{{o.op1}}</option>
+                                  <option value="{{o.op2}}">{{o.op2}}</option>
+                                  <option value="{{o.op3}}">{{o.op3}}</option>
+                                  <option value="{{o.op4}}">{{o.op4}}</option>
+                                  <option value="{{o.op5}}">{{o.op5}}</option>
+                                </select>
+                                 </p>
+
+                              {% endfor %}
+                              <button  type="submit"  data-product="{{item.product.id}}" data-action="post"  class="btn btn-primary update-cart">
+                                <div id="final{{item.product.name}}"></div>
+                              </button>
+                            </form>
+        
+                            </div>
+      
+
+
+                            <div class="col-md-3 col-lg-3 col-xl-2">
+                              <p id="c{{item.product.id}}" >{{item.quantity}}</p>
+                              <div>
+                                <a  id="out" data-product="{{item.product.id}}" data-action="add" class="chg-quantity btn btn-outline-success mt-auto update-cart add-btn" ><i class="bi bi-plus-circle-fill"></i></a>
+                            
+                                <a  id="out" data-product="{{item.product.id}}" data-action="remove" class="chg-quantity btn btn-outline-danger mt-auto update-cart add-btn" ><i style="color:red;" class="bi bi-dash-circle-fill"></i></a>
+                              </div>
+                            </div>
+                            <script>
+  
+                              document.addEventListener("click", function(){
+                            
+                              $("#c{{item.product.id}}").load(location.href + " #c{{item.product.id}}");
+                              $("#totalpay").load(location.href + " #totalpay");
+                            
+                            
+                               });
+                            
+                            
+                            </script>
+                            
+
+                            <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                              <h5 class="mb-0">${{item.product.price|floatformat:2}}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {% endfor %}
+              
+                      <div class="card mb-4">
+                        <div class="card-body p-4 d-flex flex-row">
+                          <div class="form-outline flex-fill">
+                            <input placeholder="discount code" type="text" id="form1" class="form-control form-control-lg" />
+                          </div>
+                          <button id="john" style="color: white; font-weight:bold" type="button" class="btn  btn-warning ">Apply</button>
+                        </div>
+                      </div>
+
+                      <div class="card">
+                        <div class="card-body">
+                          <button id="totalpay" style="width:100%; color:white; font-weight:bold;" type="button" class="btn btn-dark btn-lg btn-block">TOTAL : ${{order.get_cart_total|floatformat:2}}</button>
+                        </div>
+                      </div>
+                    
+
+
+              
+                      <div class="card">
+                        <div class="card-body">
+                          <a href="{% url 'checkout' %}" style="width:100%; color:white; font-weight:bold;" type="button" class="btn btn-warning btn-lg btn-block">Proceed to Pay</a>
+                        </div>
+                      </div>
+              
+                    </div>
+                  </div>
+                </div>
+              </section>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Header-->
+<header class="bg-dark py-5">
+  <div class="container px-4 px-lg-5 my-5">
+      <div class="text-center text-white">
+          <h1 class="display-4 fw-bolder">Present in style</h1>
+          <p class="lead fw-normal text-white-50 mb-0">With my E-commerce websites</p>
+      </div>
+  </div>
+
+</header>
+<!-- Section-->
+<section class="py-5">
+  <div class="container px-4 px-lg-5 mt-5">
+      <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+          {% for product in products %}
+
+          <div class="col mb-5">
+              <div class="card h-100">
+                  <!-- Sale badge-->
+                  <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Product</div>
+                  <!-- Product image-->
+                  <img class="card-img-top"  src="{{product.imageURL}}" alt="..." />
+                  <!-- Product details-->
+                  <div class="card-body p-4">
+                      <div class="text-center">
+                          <!-- Product name-->
+                          <h5 class="fw-bolder">{{product.name}}</h5>
+                          <!-- Product reviews-->
+                          <div class="d-flex justify-content-center small text-warning mb-2">
+                              <div class="bi-star-fill"></div>
+                              <div class="bi-star-fill"></div>
+                              <div class="bi-star-fill"></div>
+                              <div class="bi-star-fill"></div>
+                              <div class="bi-star-fill"></div>
+                          </div>
+                          <!-- Product price-->
+                          ${{product.price}}
+                      </div>
+                  </div>
+                  <!-- Product actions-->
+                  <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                      <div class="text-center"><a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" onclick="reloadFunction()" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                        <button class="btn btn-outline-success" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{product.id}}">View</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div id="box{{product.id}}" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <section class="py-5">
+                  <div class="container px-4 px-lg-5 my-5">
+                      <div class="row gx-4 gx-lg-5 align-items-center">
+                          <div class="col-md-6">
+                                <a href="{{product.imageURL}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{product.imageURL}}" alt="..." /></a>
+
+                            <div class="row">
+                            {% for i in product.extraimage_set.all %}
+                        
+                            <div class="col-md-4 p-3">
+                            
+                                <a href="{{i.img.url}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{i.img.url}}" alt="..." /></a>
+                
+                            </div>
+                        
+                            {% endfor %}
+                            </div>
+
+
+                        </div>
+                          <div class="col-md-6">
+                              <div class="small mb-1">SKU: BST-498</div>
+                              <h1 class="display-5 fw-bolder">{{product.name}}</h1>
+                              <div class="fs-5 mb-5">
+                                  <span class="text-decoration-line-through">$2.299.00</span>
+                                  <span>{{product.price}}</span>
+                              </div>
+                              <p class="lead">{{product.description}}</p>
+
+                              {% for o in product.option_set.all %}
+                              <p  id="dd{{product.id}}" class="lead">{{o.op1}}|{{o.op2}}|{{o.op3}}|{{o.op4}}|{{o.op5}}</p>
+                              {% endfor %}
+                              <script>
+                                var text2 = document.getElementById("dd{{product.id}}").innerHTML; 
+                                var result2 = text2.replace(/none/gi, "");
+                                document.getElementById("dd{{product.id}}").innerHTML = result2;
+                              </script>
+                                <script>
+                                  var text1 = document.getElementById("t{{product.id}}").innerHTML; 
+                                  var result1 = text1.replace(/none/gi, "");
+                                  document.getElementById("t{{product.id}}").innerHTML = result1;
+                                </script>
+                              
+
+
+                              <div class="d-flex">
+                                <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" onclick="reloadFunction()" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
+                                  <button  type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                              </div>
+                              
+                          </div>
+                      </div>
+                  </div>
+              </section>
+              </div>
+            </div>
+          </div>
+        
+          {% endfor %}
+
+      </div>
+  </div>
+</section>
+<script type="text/javascript" src="{% static 'assets/js/cart.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+{% for item in items %}
+
+<script>
+  var form = document.getElementById('{{item.product.name}}');
+  form.addEventListener("submit",submitHandler);
+  function submitHandler(e) {
+    var serializedData = $(this).serialize();
+    e.preventDefault();
+    $.ajax({
+        type: 'POST' , 
+        url : '{% url "getvar" %}',
+        data: serializedData  ,
+        dataType: 'json',
+        success: function (data) {
+                $("#{{item.product.name}}").trigger('reset');
+                var option = data.var
+                console.log(option)
+                document.getElementById('final{{item.product.name}}').textContent = option
+
+      
+    }
+ })
+}
+
+</script>
+
+{% endfor %}
+
+
+
+
+
+
+
+
+
+
+{% endblock content %}
