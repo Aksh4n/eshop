@@ -25,16 +25,21 @@ def logout_user(request):
 
 def shop(request):
 	products = Product.objects.all()
-	options = Option.objects.all()
 	data = cartData(request)
-
+	star = Star.objects.all()
+	cat = Category.objects.all()
 	cartItems = data['cartItems']
 	order = data['order']
 	items = data['items']
+	sort_by = request.GET.get("sort", "l2h") 
+	if sort_by == "l2h":
+		products = Product.objects.all().order_by("price")
+	elif sort_by == "h2l":
+		products = Product.objects.all().order_by("-price")
 	
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems ,'products':products , 'options':options }
-	return render(request, 'shop.html', context)
+	context = {'items':items, 'order':order, 'cartItems':cartItems ,'products':products , 'star':star, 'cat':cat}
+	return render(request, 'shop.html', context )
 
 def checkout(request):
 	data = cartData(request)
@@ -102,6 +107,46 @@ def updateItem(request):
 		orderItem.delete()
 
 	return JsonResponse( {'msg': 'success'} , safe=False)
+from django.db.models import Q
+def searchProduct(request):
+	if request.method == 'GET':
+		data = cartData(request)
+		star = Star.objects.all()
+		cat = Category.objects.all()
+		cartItems = data['cartItems']
+		order = data['order']
+		items = data['items']
+		query= request.GET.get('q')
+		if query is not None:
+			lookups= Q(name__icontains=query) | Q(info__icontains=query)
+			products= Product.objects.filter(lookups).distinct()
+			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star,'cat':cat}
+			print(products)		 
+			return render(request, 'shop.html', context)
+		else:
+			return redirect('shop')
+	else:
+		return redirect('shop')
+
+def searchProductByCat(request):
+	if request.method == 'GET':
+		data = cartData(request)
+		star = Star.objects.all()
+		cat = Category.objects.all()
+		cartItems = data['cartItems']
+		order = data['order']
+		items = data['items']
+		query= request.GET.get('q')
+		if query is not None:
+			lookups= Q(category__name=query)
+			products= Product.objects.filter(lookups).distinct()
+			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star,'cat':cat}
+			print(products)		 
+			return render(request, 'shop.html', context)
+		else:
+			return redirect('shop')
+	else:
+		return redirect('shop')
 
 
        

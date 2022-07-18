@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'store',
     'rest_framework',
     'text',
+    'blog',
+
 ]
 
 MIDDLEWARE = [

@@ -58,32 +58,9 @@
   }
 </script>
 
-<br>
-<br>
-<br>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container px-4 px-lg-5">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
-              <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
-                  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" href="#!">All Products</a></li>
-                      <li><hr class="dropdown-divider" /></li>
-                      <li><a class="dropdown-item" href="#!">Popular Items</a></li>
-                      <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
-                  </ul>
-              </li>
-          </ul>
-              <button class="btn btn-outline-dark"  data-bs-toggle="modal" data-bs-target="#cart">
-                  <i class="bi-cart-fill me-1"></i>
-                  Cart
-                  <span id="cart-total" class="badge bg-dark text-white ms-1 rounded-pill" style="font-size:medium ;">{{cartItems}}</span>
-              </button>
-      </div>
-  </div>
-</nav>
+
+
+
 <div id="cart" class="modal fade " tabindex="-1">
     <div  class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -91,7 +68,7 @@
           <h5 class="modal-title">Modal title</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div id="cart-body2" class="modal-body">
             
             <section   class="h-100" style="background-color: #eee;">
                 <div  class="container h-100 py-5">
@@ -100,14 +77,18 @@
               
                       <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
-                        <div>
-                          <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
-                                class="fas fa-angle-down mt-1"></i></a></p>
-                        </div>
+                        <script>
+                          function reloadFunction2(){
+                           $("#cart-body2").load(location.href + " #cart-body2");
+                         console.log('refreshed');
+                          }
+                        </script>
+                        
+                        <button onclick="reloadFunction2()" class="btn btn-secondary" >Refresh</button>
                       </div>
                       {% for item in items %}
 
-                      <div  class="card rounded-3 mb-4">
+                      <div class="card rounded-3 mb-4">
                         <div class="card-body p-4">
                           <div class="row d-flex justify-content-between align-items-center">
                             <div class="col-md-2 col-lg-2 col-xl-2">
@@ -121,24 +102,24 @@
                               <form id="{{item.product.name}}" action="{% url 'getvar' %}" method="post">
                                 {% csrf_token %}
                               {% for o in item.product.option_set.all %}
-
-                              <p  id="t{{item.product.id}}">
-                                <span style="font-weight:bold ;" class="text-muted">options: </span>
-  
-                                <select   name="option" class="form-select">
-                                  <option value="{{o.op1}}">{{o.op1}}</option>
-                                  <option value="{{o.op2}}">{{o.op2}}</option>
-                                  <option value="{{o.op3}}">{{o.op3}}</option>
-                                  <option value="{{o.op4}}">{{o.op4}}</option>
-                                  <option value="{{o.op5}}">{{o.op5}}</option>
-                                </select>
-                                 </p>
-
+                              
+                                  <p  id="t{{item.product.id}}">
+                                    <span style="font-weight:bold ;" class="text-muted">options: </span>
+                                    <select   name="option" class="form-select">
+                                      <option value="{{o.op1}}">{{o.op1}}</option>
+                                      <option value="{{o.op2}}">{{o.op2}}</option>
+                                      <option value="{{o.op3}}">{{o.op3}}</option>
+                                      <option value="{{o.op4}}">{{o.op4}}</option>
+                                      <option value="{{o.op5}}">{{o.op5}}</option>
+                                    </select>
+                                    </p>
+                              
                               {% endfor %}
                               <button  type="submit"  data-product="{{item.product.id}}" data-action="post"  class="btn btn-primary update-cart">
-                                <div id="final{{item.product.name}}"></div>
+                                <div id="final{{item.product.name}}">Submit</div>
                               </button>
-                            </form>
+                              </form>
+
         
                             </div>
       
@@ -175,14 +156,6 @@
 
                       {% endfor %}
               
-                      <div class="card mb-4">
-                        <div class="card-body p-4 d-flex flex-row">
-                          <div class="form-outline flex-fill">
-                            <input placeholder="discount code" type="text" id="form1" class="form-control form-control-lg" />
-                          </div>
-                          <button id="john" style="color: white; font-weight:bold" type="button" class="btn  btn-warning ">Apply</button>
-                        </div>
-                      </div>
 
                       <div class="card">
                         <div class="card-body">
@@ -213,25 +186,61 @@
   </div>
 
 <!-- Header-->
-<header class="bg-dark py-5">
+<header data-aos="fade-in" class="bg-dark py-5">
   <div class="container px-4 px-lg-5 my-5">
       <div class="text-center text-white">
           <h1 class="display-4 fw-bolder">Present in style</h1>
-          <p class="lead fw-normal text-white-50 mb-0">With my E-commerce websites</p>
+          <p  class="lead fw-normal text-white-50 mb-0">With my E-commerce websites</p>
       </div>
+      <br>
+      <form  value="{{request.GET.q}}" action="{% url 'search' %}" class="d-flex ">
+        <input name="q" value="{{request.GET.q}}" class="form-control me-2" type="search" placeholder="Search Products" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
   </div>
 
 </header>
+
+<div data-aos="fade-up" style="width: 30%;" class="btn-group m-1">
+  <button type="button" class="btn btn-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Choose Category
+  </button>
+  <ul style="width: 50%;" class="dropdown-menu">
+    {% for c in cat %}
+
+    <li><a class="dropdown-item" href="http://127.0.0.1:8080/searchc/?q={{c}}">{{c}}</a></li>
+    {% endfor %}
+
+  </ul>
+</div>
+<div data-aos="fade-up" style="width: 30%; float: right;" class="btn-group m-1">
+  <button type="button" class="btn btn-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Order By
+  </button>
+  <ul style="width: 50%;" class="dropdown-menu">
+    <li class="dropdown-item"><a  href="?sort=l2h">Price:--low to high</a></li>
+    <li class="dropdown-item"><a  href="?sort=h2l">Price:-- high to low</a></li>
+  </ul>
+</div>
+
+
+<button style="width: 25%;" class="btn btn-success fixed-bottom mb-2 m-1"  data-bs-toggle="modal" data-bs-target="#cart">
+  <i class="bi-cart-fill me-1"></i>
+  Cart
+  <span  id="cart-total" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning" style="font-size:medium ;">{{cartItems}}</span>
+</button>
+
 <!-- Section-->
-<section class="py-5">
-  <div class="container px-4 px-lg-5 mt-5">
-      <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+<section  class=" py-5">
+  <div class="container  px-4 px-lg-5 mt-5">
+      <div class=" row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
           {% for product in products %}
 
-          <div class="col mb-5">
+          <div  data-aos="fade-up" class="col mb-5">
               <div class="card h-100">
                   <!-- Sale badge-->
-                  <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Product</div>
+                  <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">{{product.category}}</div>
                   <!-- Product image-->
                   <img class="card-img-top"  src="{{product.imageURL}}" alt="..." />
                   <!-- Product details-->
@@ -240,21 +249,24 @@
                           <!-- Product name-->
                           <h5 class="fw-bolder">{{product.name}}</h5>
                           <!-- Product reviews-->
+                          <div>{{product.info}}</div>
                           <div class="d-flex justify-content-center small text-warning mb-2">
+                            {% for star in product.star_set.all %}
                               <div class="bi-star-fill"></div>
-                              <div class="bi-star-fill"></div>
-                              <div class="bi-star-fill"></div>
-                              <div class="bi-star-fill"></div>
-                              <div class="bi-star-fill"></div>
+                              {% endfor %}
                           </div>
                           <!-- Product price-->
+                          {% if product.price_before %}
+                          <span class="text-decoration-line-through">${{product.price_before}}</span>
+                        {% endif %}  
+
                           ${{product.price}}
                       </div>
                   </div>
                   <!-- Product actions-->
                   <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                      <div class="text-center"><a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" onclick="reloadFunction()" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
-                        <button class="btn btn-outline-success" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{product.id}}">View</button>
+                      <div class="text-center"><a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                        <button class="btn btn-outline-primary" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{product.id}}">View</button>
                       </div>
                   </div>
               </div>
@@ -283,10 +295,12 @@
 
                         </div>
                           <div class="col-md-6">
-                              <div class="small mb-1">SKU: BST-498</div>
+                              <div class="small mb-1">{{product.category}}</div>
                               <h1 class="display-5 fw-bolder">{{product.name}}</h1>
                               <div class="fs-5 mb-5">
-                                  <span class="text-decoration-line-through">$2.299.00</span>
+                                {% if product.price_before %}
+                                  <span class="text-decoration-line-through">${{product.price_before}}</span>
+                                {% endif %}  
                                   <span>{{product.price}}</span>
                               </div>
                               <p class="lead">{{product.description}}</p>
@@ -294,6 +308,7 @@
                               {% for o in product.option_set.all %}
                               <p  id="dd{{product.id}}" class="lead">{{o.op1}}|{{o.op2}}|{{o.op3}}|{{o.op4}}|{{o.op5}}</p>
                               {% endfor %}
+                              
                               <script>
                                 var text2 = document.getElementById("dd{{product.id}}").innerHTML; 
                                 var result2 = text2.replace(/none/gi, "");
@@ -308,7 +323,7 @@
 
 
                               <div class="d-flex">
-                                <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" onclick="reloadFunction()" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
+                                <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
                                   <button  type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                               </div>
                               
@@ -325,6 +340,7 @@
       </div>
   </div>
 </section>
+
 <script type="text/javascript" src="{% static 'assets/js/cart.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
@@ -354,15 +370,11 @@
 
 </script>
 
+
+
 {% endfor %}
 
 
 
-
-
-
-
-
-
-
 {% endblock content %}
+

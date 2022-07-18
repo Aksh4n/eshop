@@ -1,4 +1,5 @@
 import json
+
 from .models import *
 
 def cookieCart(request):
@@ -30,8 +31,8 @@ def cookieCart(request):
 				item = {
 				'id':product.id,
 				'product':{'id':product.id,'name':product.name, 'price':product.price, 
-				'imageURL':product.imageURL}, 'quantity':cart[i]['quantity'], 'option':cart[i]['option'],
-				'get_total':total,
+				'imageURL':product.imageURL,}, 'quantity':cart[i]['quantity'],
+				'get_total':total
 				}
 				items.append(item)
 
@@ -51,10 +52,10 @@ def cartData(request):
 		cookieData = cookieCart(request)
 		cartItems = cookieData['cartItems']
 		order = cookieData['order']
-		items = cookieData['items']		
+		items = cookieData['items']	
 
 
-	return {'cartItems':cartItems ,'order':order, 'items':items }
+	return {'cartItems':cartItems ,'order':order, 'items':items}
 
 	
 def guestOrder(request, data):
@@ -81,7 +82,6 @@ def guestOrder(request, data):
 			product=product,
 			order=order,
 			quantity=(item['quantity'] if item['quantity']>0 else -1*item['quantity']), # negative quantity = freebies
-			option=(item['option'])
 			
 		)
 	return customer, order

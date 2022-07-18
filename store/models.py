@@ -33,7 +33,9 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=200)
     price = models.FloatField()
+    price_before = models.FloatField(null=True, blank=True)
     inventory = models.IntegerField(default=0)
+    info = models.CharField(max_length=200, null=True, blank=True)
     description = models.TextField(null=True)
     last_update = models.DateTimeField()
     image = models.ImageField(null=True,blank=True)
@@ -98,6 +100,11 @@ class Order(models.Model):
         orderitems = self.orderitem_set.all()
         total = sum([item.quantity for item in orderitems])
         return total        
+    @property
+    def get_cart_options(self):
+        orderitems = self.orderitem_set.all()
+        total = (item.product.option_set.all() for item in orderitems)
+        return total            
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
@@ -111,3 +118,5 @@ class OrderItem(models.Model):
     def get_total(self):
         total = self.product.price * self.quantity
         return total
+class Star(models.Model):
+    star = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)

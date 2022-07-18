@@ -115,8 +115,8 @@ h1, h2, h3, h4, h5, h6 {
 # Header
 --------------------------------------------------------------*/
 #header {
-  background: #11013599;
-  box-shadow: 0px 0px 25px 0 rgba(245, 241, 241, 0.08);
+  background: #11013586;
+  box-shadow: 0px 0px 25px 0 rgba(245, 241, 241, 0.485);
   z-index: 997;
   padding: 15px 0;
 }
@@ -226,7 +226,7 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 0;
   visibility: hidden;
   background: #fff;
-  box-shadow: 0px 0px 30px rgba(255, 255, 255, 0.25);
+  box-shadow: 0px 0px 30px rgb(255, 255, 255);
   transition: 0.3s;
   border-radius: 4px;
 }
