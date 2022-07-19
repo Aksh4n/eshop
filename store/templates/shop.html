@@ -200,19 +200,7 @@
   </div>
 
 </header>
-
-<div data-aos="fade-up" style="width: 30%;" class="btn-group m-1">
-  <button type="button" class="btn btn-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Choose Category
-  </button>
-  <ul style="width: 50%;" class="dropdown-menu">
-    {% for c in cat %}
-
-    <li><a class="dropdown-item" href="http://127.0.0.1:8080/searchc/?q={{c}}">{{c}}</a></li>
-    {% endfor %}
-
-  </ul>
-</div>
+<!--
 <div data-aos="fade-up" style="width: 30%; float: right;" class="btn-group m-1">
   <button type="button" class="btn btn-dark  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
     Order By
@@ -223,6 +211,8 @@
   </ul>
 </div>
 
+-->
+
 
 <button style="width: 25%;" class="btn btn-success fixed-bottom mb-2 m-1"  data-bs-toggle="modal" data-bs-target="#cart">
   <i class="bi-cart-fill me-1"></i>
@@ -231,8 +221,170 @@
 </button>
 
 <!-- Section-->
+<style>
+
+.list {
+  display: flex;
+  overflow-x: auto;
+
+
+  /* momentum scroll on iOS */
+  -webkit-overflow-scrolling: touch;
+
+  /* scroll snapping */
+  scroll-snap-type: x mandatory;
+}
+.item:not(:last-child) { margin-right: 15px; }
+
+
+
+.item {
+  flex-shrink: 0;
+
+  /* scroll snapping */
+  scroll-snap-align: start;
+
+  /* maybe this will work in the future 🤷‍♂️ */
+  scroll-snap-stop: always;
+}
+
+
+</style>
+<style>
+.prev,
+.next {
+  position: absolute;
+  top: 670px;
+  cursor: pointer;
+  font-size: 60px;
+  color: #181818;
+}
+
+.prev {
+  left: 20px;
+}
+
+.next {
+  right: 20px;
+}
+.section-title {
+  text-align: center;
+  padding-bottom: 30px;
+}
+.section-title h2 {
+  font-size: 32px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  color: #45505b;
+}
+.section-title h2::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 120px;
+  height: 1px;
+  background: #ddd;
+  bottom: 1px;
+  left: calc(50% - 60px);
+}
+.section-title h2::after {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: #0563bb;
+  bottom: 0;
+  left: calc(50% - 20px);
+}
+
+</style>
+{% if cat %}
+<section id="speakers" class=" py-5">
+
+  <h2 class="section-title" data-aos="fade-up" style="font-weight: bold;">Categories</h2>
+      <div  class="list gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-5 ">
+          {% for x in cat %}
+            <div class="item col-lg-4 col-md-6">
+              <div class="speaker" data-aos="fade-up" data-aos-delay="100">
+                <img src="{{x.image.url}}" alt="Speaker 1" class="img-fluid">
+                <div class="details">
+                  <h3><a href="http://127.0.0.1:8080/searchc/?q={{x}}">{{x}}</a></h3>
+                </div>
+              </div>
+            </div>
+
+          
+        
+          {% endfor %}
+          
+
+      </div>
+</section>
+{% endif %}
+
+{% if new %}
+<section id="list" class=" py-5">
+
+  <h2 class="section-title" data-aos="fade-up" style="font-weight: bold;">New Products</h2>
+      <div id="list" class="list gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-5 ">
+
+          {% for p in new %}
+          <div id="list"  data-aos="fade-up" class="item col mb-5">
+              <div class="card h-100">
+                  <!-- Sale badge-->
+                  <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">{{p.category}}</div>
+                  <!-- Product image-->
+                  <img class="card-img-top"  src="{{p.imageURL}}" alt="..." />
+                  <!-- Product details-->
+                  <div class="card-body p-4">
+                      <div class="text-center">
+                          <!-- Product name-->
+                          <h5 class="fw-bolder">{{p.name}}</h5>
+                          <!-- Product reviews-->
+                          <div>{{p.info}}</div>
+                          <div class="d-flex justify-content-center small text-warning mb-2">
+                            {% for star in product.star_set.all %}
+                              <div class="bi-star-fill"></div>
+                              {% endfor %}
+                          </div>
+                          <!-- Product price-->
+                          {% if p.price_before %}
+                          <span class="text-decoration-line-through">${{p.price_before}}</span>
+                        {% endif %}  
+
+                          ${{p.price}}
+                      </div>
+                  </div>
+                  <!-- Product actions-->
+                  <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                      <div class="text-center"><a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                        <button class="btn btn-outline-primary" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{p.id}}">View</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          
+        
+          {% endfor %}
+          
+
+      </div>
+</section>
+{% endif %}
+<!-- 
+<a type="button" id="slide" class='prev'><i class="bi bi-arrow-left-circle"></i></a>
+<a type="button" id="slideBack" class='next'><i class="bi bi-arrow-right-circle"></i></a>
+
+-->  
+
+<!-- Section-->
 
 <section  class=" py-5">
+  <h2 class="section-title" data-aos="fade-up" style="font-weight: bold;">ALL Products</h2>
   <div class="container  px-4 px-lg-5 mt-5">
       <div class=" row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
           {% for product in products %}
@@ -271,78 +423,84 @@
                   </div>
               </div>
           </div>
-          <div id="box{{product.id}}" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-              <div class="modal-content">
-                <section class="py-5">
-                  <div class="container px-4 px-lg-5 my-5">
-                      <div class="row gx-4 gx-lg-5 align-items-center">
-                          <div class="col-md-6">
-                                <a href="{{product.imageURL}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{product.imageURL}}" alt="..." /></a>
-
-                            <div class="row">
-                            {% for i in product.extraimage_set.all %}
-                        
-                            <div class="col-md-4 p-3">
-                            
-                                <a href="{{i.img.url}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{i.img.url}}" alt="..." /></a>
-                
-                            </div>
-                        
-                            {% endfor %}
-                            </div>
-
-
-                        </div>
-                          <div class="col-md-6">
-                              <div class="small mb-1">{{product.category}}</div>
-                              <h1 class="display-5 fw-bolder">{{product.name}}</h1>
-                              <div class="fs-5 mb-5">
-                                {% if product.price_before %}
-                                  <span class="text-decoration-line-through">${{product.price_before}}</span>
-                                {% endif %}  
-                                  <span>{{product.price}}</span>
-                              </div>
-                              <p class="lead">{{product.description}}</p>
-
-                              {% for o in product.option_set.all %}
-                              <p  id="dd{{product.id}}" class="lead">{{o.op1}}|{{o.op2}}|{{o.op3}}|{{o.op4}}|{{o.op5}}</p>
-                              {% endfor %}
-                              
-                              <script>
-                                var text2 = document.getElementById("dd{{product.id}}").innerHTML; 
-                                var result2 = text2.replace(/none/gi, "");
-                                document.getElementById("dd{{product.id}}").innerHTML = result2;
-                              </script>
-                                <script>
-                                  var text1 = document.getElementById("t{{product.id}}").innerHTML; 
-                                  var result1 = text1.replace(/none/gi, "");
-                                  document.getElementById("t{{product.id}}").innerHTML = result1;
-                                </script>
-                              
-
-
-                              <div class="d-flex">
-                                <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
-                                  <button  type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                              </div>
-                              
-                          </div>
-                      </div>
-                  </div>
-              </section>
-              </div>
-            </div>
-          </div>
-        
           {% endfor %}
 
       </div>
   </div>
-</section>
+</section>        
+
+
+
+
+{% for product in products %}
+<div id="box{{product.id}}" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <section class="py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="row gx-4 gx-lg-5 align-items-center">
+                <div class="col-md-6">
+                      <a href="{{product.imageURL}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{product.imageURL}}" alt="..." /></a>
+
+                  <div class="row">
+                  {% for i in product.extraimage_set.all %}
+              
+                  <div class="col-md-4 p-3">
+                  
+                      <a href="{{i.img.url}}"  class="portfolio-lightbox" ><img class="card-img-top mb-5 mb-md-0" src="{{i.img.url}}" alt="..." /></a>
+      
+                  </div>
+              
+                  {% endfor %}
+                  </div>
+
+
+              </div>
+                <div class="col-md-6">
+                    <div class="small mb-1">{{product.category}}</div>
+                    <h1 class="display-5 fw-bolder">{{product.name}}</h1>
+                    <div class="fs-5 mb-5">
+                      {% if product.price_before %}
+                        <span class="text-decoration-line-through">${{product.price_before}}</span>
+                      {% endif %}  
+                        <span>{{product.price}}</span>
+                    </div>
+                    <p class="lead">{{product.description}}</p>
+
+                    {% for o in product.option_set.all %}
+                    <p  id="dd{{product.id}}" class="lead">{{o.op1}}|{{o.op2}}|{{o.op3}}|{{o.op4}}|{{o.op5}}</p>
+                    {% endfor %}
+                    
+                    <script>
+                      var text2 = document.getElementById("dd{{product.id}}").innerHTML; 
+                      var result2 = text2.replace(/none/gi, "");
+                      document.getElementById("dd{{product.id}}").innerHTML = result2;
+                    </script>
+                      <script>
+                        var text1 = document.getElementById("t{{product.id}}").innerHTML; 
+                        var result1 = text1.replace(/none/gi, "");
+                        document.getElementById("t{{product.id}}").innerHTML = result1;
+                      </script>
+                    
+
+
+                    <div class="d-flex">
+                      <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
+                        <button  type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 <script type="text/javascript" src="{% static 'assets/js/cart.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 
 {% for item in items %}
 

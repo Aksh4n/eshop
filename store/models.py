@@ -4,12 +4,13 @@ from django.db.models.signals import post_save
 
 # Create your models here.
 class Customer(models.Model):
-	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True)
-	email = models.CharField(max_length=200 , null=True)
-
-	def __str__(self):
-		return str(self.user)
+    user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
+    name = models.CharField(max_length=200, null=True)
+    last = models.CharField(max_length=200, null=True)
+    phone = models.CharField(max_length=200 , null=True)
+    email = models.CharField(max_length=200 , null=True)
+    def __str__(self):
+        return str(self.user)
 def create_customer(sender, instance, created, **kwargs):
     if created:
         Customer.objects.create(user=instance)
@@ -18,6 +19,7 @@ post_save.connect(create_customer, sender=User)
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
+    image = models.ImageField(null=True, blank=True)
     def __str__(self):
         return self.name
 
@@ -120,3 +122,16 @@ class OrderItem(models.Model):
         return total
 class Star(models.Model):
     star = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    def __str__(self):
+        return str(self.star)
+class Contact(models.Model):
+    subject = models.CharField(max_length=200)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(max_length=200)
+    message = models.TextField(max_length=1000)
+
+
+
+    def __str__(self):
+
+        return self.subject  

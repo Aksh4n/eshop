@@ -1,5 +1,5 @@
 from django import forms
-from .models import  Order
+from .models import  *
 import datetime
 
 # Create your forms here.
@@ -22,3 +22,26 @@ class OrderForm(forms.ModelForm):
 		self.fields['items'].widget.attrs['class']= 'form-control'	
 		self.fields['complete'].widget.attrs['class']= ''
 		self.fields['transaction_id'].widget.attrs['class']= 'form-control'
+
+
+class ContactForm(forms.ModelForm):
+	class Meta:
+		model = Contact
+		exclude = ()
+		feilds = ['subject', 'name', 'email', 'message']
+		
+	subject = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control' }))
+
+	name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control' }))
+	email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control' }))
+	message = forms.CharField(widget = forms.Textarea(attrs={'class':'form-control' }))
+class CustomerForm(forms.ModelForm):
+	class Meta:
+		model = Customer
+        
+		exclude = ('user',)
+		feilds = ['name', 'last','email','phone']
+		name = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control' }))
+		last = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control' }))
+		email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control' }))
+		phone = forms.CharField(widget = forms.Textarea(attrs={'class':'form-control' }))

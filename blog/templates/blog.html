@@ -94,12 +94,11 @@
     <!-- ======= Speakers Section ======= -->
     <section id="speakers">
         <div class="container" data-aos="fade-up">
-          <div class="section-header">
-            <h2>Event Speakers</h2>
-            <p>Here are some of our speakers</p>
-          </div>
-  {% for post in posts %}
+          <h2 class="section-title" data-aos="fade-up" style="font-weight: bold;">Blogs</h2>
           <div class="row">
+
+
+  {% for post in posts %}
             <div class="col-lg-4 col-md-6">
               <div class="speaker" data-aos="fade-up" data-aos-delay="100">
                 <img src="{{post.main_img.url}}" alt="Speaker 1" class="img-fluid">
@@ -115,9 +114,11 @@
                 </div>
               </div>
             </div>
-        </div>
 
       {% endfor %}  
+    </div>
+        </div>
+        
   
       </section><!-- End Speakers Section -->
       {% for post in posts %}

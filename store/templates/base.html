@@ -29,18 +29,12 @@
   <!-- Template Main CSS File -->
   <link href="{% static '' %}assets/css/style.css" rel="stylesheet">
 
-  <!-- =======================================================
-  * Template Name: Kelly - v4.7.0
-  * Template URL: https://bootstrapmade.com/kelly-free-bootstrap-cv-resume-html-template/
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
 </head>
 
 <body>
 
   <!-- ======= Header ======= -->
-  <header data-aos="fade-in" id="header" class="fixed-top">
+  <header id="header" class="fixed-top">
     <div class="container-fluid d-flex justify-content-between align-items-center">
 
       <h1 class="logo me-auto me-lg-0"><a href="index.html">Kelly</a></h1>
@@ -50,11 +44,17 @@
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
           <li><a class="active" href="{% url 'home' %}">Home</a></li>
-          <li><a href="about.html">About</a></li>
-          <li><a href="resume.html">Resume</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
           <li><a href="{% url 'shop' %}">Shop</a></li>
           <li><a href="{% url 'blog' %}">Blog</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'logout' %}">LogOut</a></li>
+          <li><a href="{% url 'profile' %}">Profile</a></li>
+
+          {% else %}
+          <li><a data-bs-toggle="modal" href="#exampleModalToggle" role="button">SignUp/LogIn</a></li>
+          {% endif %}
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
@@ -69,24 +69,138 @@
     </div>
 
   </header><!-- End Header -->
+  <!-- SingUp modal -->
+  <div class="modal fade" id="exampleModalToggle" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel">Sign In</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form" action="{% url 'login' %}" method="post" class="">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+              <input type="text" name="username" class="form-control rounded-3" id="floatingInput" placeholder="UserName">
+              <label for="floatingInput">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" name="password" class="form-control rounded-3" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password</label>
+            </div>
+            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">LogIn</button>
+            <small class="text-muted">Forgot your password? click here</small>
+            <hr class="my-4">
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">have not an account?? Register here</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalToggleLabel2">SignUp</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="register-form" method="post" action="{% url 'register' %}" class="">
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+              <input type="text" name="username" class="form-control rounded-3" id="floatingInput" placeholder="UserName">
+              <label for="floatingInput">Username</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input type="email" name="email" class="form-control rounded-3" id="floatingInput" placeholder="name@example.com">
+              <label for="floatingInput">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" name="password1" class="form-control rounded-3" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" name="password2" class="form-control rounded-3" id="floatingPassword" placeholder="Password">
+              <label for="floatingPassword">Password Confirmation</label>
+            </div>
+
+            <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary" type="submit">Register</button>
+            <hr class="my-4">
+          </form>
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal">Back to SignIn</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script>
+    const register = document.getElementById('register-form');
+  register.addEventListener("submit",submitHandler);
+  function submitHandler(e) {
+      var serializedData = $(this).serialize();
+      e.preventDefault();
+      $.ajax({
+          type: 'POST' , 
+          url : '{% url "register" %}',
+          data: serializedData  ,
+          dataType: 'json',
+          success: function (data) {
+              if (data.msg === 'Success') {
+                  alert('registered Succesfully, you can log in now');
+                  $("#register-form").trigger('reset');
+        } else {
+            alert('there was an err try again')
+          }
+      }
+   })
+  }
   
-  {% block content %}
-
-
-    {% endblock content %}
+  </script>
+    <script>
+      const login = document.getElementById('login-form');
+    login.addEventListener("submit",submitHandler);
+    function submitHandler(e) {
+        var serializedData = $(this).serialize();
+        e.preventDefault();
+        $.ajax({
+            type: 'POST' , 
+            url : '{% url "login" %}',
+            data: serializedData  ,
+            dataType: 'json',
+            success: function (data) {
+                if (data.msg === 'Success') {
+                    alert('Logged in!');
+                    $("#login-form").trigger('reset'); 
+                    window.location.reload();   
+          } else {
+            alert('there was an err try again')
+          }
+        }
+     })
+    }
     
+    </script>
+  
 
+{% block content %}
+
+{% endblock content %}
   <!-- ======= Footer ======= -->
-  <footer data-aos="fade-in" id="footer">
+  <footer id="footer">
     <div class="container">
       <div class="copyright">
         &copy; Copyright <strong><span>Kelly</span></strong>. All Rights Reserved
       </div>
       <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/kelly-free-bootstrap-cv-resume-html-template/ -->
         Designed by <a href="#">Ashkan</a>
       </div>
     </div>
@@ -108,26 +222,6 @@
   <!-- Template Main JS File -->
   <script src="{% static '' %}assets/js/main.js"></script>
 
-<script>
-  const select = (el, all = false) => {
-  el = el.trim()
-  if (all) {
-    return [...document.querySelectorAll(el)]
-  } else {
-    return document.querySelector(el)
-  }
-}
-
-  let heroCarouselIndicators = select("#hero-carousel-indicators")
-let heroCarouselItems = select('#heroCarousel .carousel-item', true)
-
-heroCarouselItems.forEach((item, index) => {
-  (index === 0) ?
-  heroCarouselIndicators.innerHTML += "<li data-bs-target='#heroCarousel' data-bs-slide-to='" + index + "' class='active'></li>":
-    heroCarouselIndicators.innerHTML += "<li data-bs-target='#heroCarousel' data-bs-slide-to='" + index + "'></li>"
-});
-
-</script>
 
 
 </body>

@@ -5,7 +5,7 @@ import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
 from django.contrib.auth import authenticate , login , logout
-from .forms import OrderForm
+from .forms import *
 from text.models import *
 
 def getvar(request):
@@ -25,6 +25,7 @@ def logout_user(request):
 
 def shop(request):
 	products = Product.objects.all()
+	new = Product.objects.filter(category__name='new')
 	data = cartData(request)
 	star = Star.objects.all()
 	cat = Category.objects.all()
@@ -38,7 +39,7 @@ def shop(request):
 		products = Product.objects.all().order_by("-price")
 	
 
-	context = {'items':items, 'order':order, 'cartItems':cartItems ,'products':products , 'star':star, 'cat':cat}
+	context = {'items':items, 'order':order, 'cartItems':cartItems ,'products':products , 'star':star, 'cat':cat, 'new':new}
 	return render(request, 'shop.html', context )
 
 def checkout(request):
@@ -120,7 +121,7 @@ def searchProduct(request):
 		if query is not None:
 			lookups= Q(name__icontains=query) | Q(info__icontains=query)
 			products= Product.objects.filter(lookups).distinct()
-			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star,'cat':cat}
+			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star}
 			print(products)		 
 			return render(request, 'shop.html', context)
 		else:
@@ -140,7 +141,7 @@ def searchProductByCat(request):
 		if query is not None:
 			lookups= Q(category__name=query)
 			products= Product.objects.filter(lookups).distinct()
-			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star,'cat':cat}
+			context={'products': products,'items':items, 'order':order, 'cartItems':cartItems , 'star':star}
 			print(products)		 
 			return render(request, 'shop.html', context)
 		else:
@@ -148,8 +149,67 @@ def searchProductByCat(request):
 	else:
 		return redirect('shop')
 
+def contact(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid() :
+            form.save()  
+            return JsonResponse({'msg': 'Success'})
+    return render(request , 'contact.html', {})
 
-       
+
+def test(request):
+	products = Product.objects.all()
+	data = cartData(request)
+	star = Star.objects.all()
+	cat = Category.objects.all()
+	cartItems = data['cartItems']
+	order = data['order']
+	items = data['items']
+	sort_by = request.GET.get("sort", "l2h") 
+	if sort_by == "l2h":
+		products = Product.objects.all().order_by("price")
+	elif sort_by == "h2l":
+		products = Product.objects.all().order_by("-price")
+	
+
+	context = {'items':items, 'order':order, 'cartItems':cartItems ,'products':products , 'star':star, 'cat':cat}
 
 
-    
+	return render(request, 'test.html', context)
+from django.contrib.auth.forms import UserCreationForm
+def register_user(request):
+	if request.method == "POST":
+		form = UserCreationForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return JsonResponse({'msg':'Success'})
+		else:
+			return JsonResponse({'msg':'Err'})
+def login_user(request):
+	if request.method == "POST" :
+		username = request.POST['username']
+		password = request.POST['password']
+		user = authenticate(request, username=username, password=password)
+		if user is not None:
+			login(request, user)
+			return JsonResponse({'msg':'Success'})
+		else:
+			return JsonResponse({'msg':'Err'})
+
+
+def profile(request):
+	return render(request, 'profile.html', {})
+def about(request):
+	return render(request, 'about.html', {})
+def updateprofile(request):
+	if request.method == "POST":
+		customer = Customer.objects.get(id=request.user.customer.id)
+		form = CustomerForm(request.POST, instance=customer)
+		if form.is_valid:
+			form.save()
+			return JsonResponse({'msg':'Success'})
+		else:
+			return JsonResponse({'msg':'err'})
+
+

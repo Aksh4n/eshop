@@ -2,6 +2,7 @@
 {% load static %}
 {% block content %}
 
+
   <!-- ======= Hero Section ======= -->
   <section data-aos="fade-in" id="hero">
     <div class="hero-container">
@@ -16,7 +17,7 @@
               <div class="container">
                 <h2 class="animate__animated animate__fadeInDown">{{t.head_line}} </h2>
                 <p class="animate__animated animate__fadeInUp"></p>
-                <a style="background-color: rgba(0, 0, 0, 0.316);" href="#about" class="btn-get-started scrollto animate__animated animate__fadeInUp">Get Started</a>
+                <a style="background-color: rgba(0, 0, 0, 0.316);" href="{% url 'shop' %}" class="btn-get-started scrollto animate__animated animate__fadeInUp">Shop Now</a>
               </div>
             </div>
           </div>
@@ -54,5 +55,27 @@
       </div>
     </div>
   </section><!-- End Hero Section -->
+
+  <script>
+    const select = (el, all = false) => {
+    el = el.trim()
+    if (all) {
+      return [...document.querySelectorAll(el)]
+    } else {
+      return document.querySelector(el)
+    }
+  }
+  
+    let heroCarouselIndicators = select("#hero-carousel-indicators")
+  let heroCarouselItems = select('#heroCarousel .carousel-item', true)
+  
+  heroCarouselItems.forEach((item, index) => {
+    (index === 0) ?
+    heroCarouselIndicators.innerHTML += "<li data-bs-target='#heroCarousel' data-bs-slide-to='" + index + "' class='active'></li>":
+      heroCarouselIndicators.innerHTML += "<li data-bs-target='#heroCarousel' data-bs-slide-to='" + index + "'></li>"
+  });
+  
+  </script>
+  
 
   {% endblock content %}

@@ -9,6 +9,18 @@ urlpatterns = [
     path('getvar/', views.getvar, name="getvar"),
     path('search/',views.searchProduct, name='search'),
     path('searchc/',views.searchProductByCat, name='searchc'),
+    path('contact/',views.contact, name='contact'),
+    path('test/',views.test, name='test'),
+    path('register/',views.register_user, name='register'),
+    path('login/',views.login_user, name='login'),
+    path('profile/',views.profile, name='profile'),
+    path('about/',views.about, name='about'),
+    path('updateprofile/',views.updateprofile, name='updateprofile'),
+
+
+
+
+
 
 
 
