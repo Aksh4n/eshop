@@ -57,32 +57,33 @@
  console.log('cart-total works');
   }
 </script>
+<script>
+  function reloadFunction2(){
+   $("#cartbbb").load(location.href + " #cartbbb");
+ console.log('refreshed');
+  }
+</script>
+
 
 
 
 
 <div id="cart" class="modal fade " tabindex="-1">
     <div  class="modal-dialog modal-xl">
-      <div class="modal-content">
+      <div  class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Modal title</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="cart-body2" class="modal-body">
+        <div  class="modal-body">
             
-            <section   class="h-100" style="background-color: #eee;">
+            <section  class="h-100" style="background-color: #eee;">
                 <div  class="container h-100 py-5">
                   <div class="row d-flex justify-content-center align-items-center h-100">
                     <div class="col-10">
               
                       <div class="d-flex justify-content-between align-items-center mb-4">
                         <h3 class="fw-normal mb-0 text-black">Shopping Cart</h3>
-                        <script>
-                          function reloadFunction2(){
-                           $("#cart-body2").load(location.href + " #cart-body2");
-                         console.log('refreshed');
-                          }
-                        </script>
                         
                         <button onclick="reloadFunction2()" class="btn btn-secondary" >Refresh</button>
                       </div>
@@ -102,6 +103,7 @@
                               <form id="{{item.product.name}}" action="{% url 'getvar' %}" method="post">
                                 {% csrf_token %}
                               {% for o in item.product.option_set.all %}
+                              {% if o %}
                               
                                   <p  id="t{{item.product.id}}">
                                     <span style="font-weight:bold ;" class="text-muted">options: </span>
@@ -114,10 +116,12 @@
                                     </select>
                                     </p>
                               
-                              {% endfor %}
-                              <button  type="submit"  data-product="{{item.product.id}}" data-action="post"  class="btn btn-primary update-cart">
-                                <div id="final{{item.product.name}}">Submit</div>
+                              
+                              <button id="button{{item.product.name}}"  type="submit"  data-product="{{item.product.id}}" data-action="post"  class="btn btn-primary update-cart visually-hidden">
+                                <div id="final{{item.product.name}}">{{o.op1}}</div>
                               </button>
+                              {% endif %}
+                              {% endfor %}
                               </form>
 
         
@@ -128,20 +132,20 @@
                             <div class="col-md-3 col-lg-3 col-xl-2">
                               <p id="c{{item.product.id}}" >{{item.quantity}}</p>
                               <div>
-                                <a  id="out" data-product="{{item.product.id}}" data-action="add" class="chg-quantity btn btn-outline-success mt-auto update-cart add-btn" ><i class="bi bi-plus-circle-fill"></i></a>
+                                <a  id="out" data-product="{{item.product.id}}" data-action="add" class="chg-quantity btn btn-outline-success mt-auto update-cart add-btn" onclick="reloadq()" ><i class="bi bi-plus-circle-fill"></i></a>
                             
-                                <a  id="out" data-product="{{item.product.id}}" data-action="remove" class="chg-quantity btn btn-outline-danger mt-auto update-cart add-btn" ><i style="color:red;" class="bi bi-dash-circle-fill"></i></a>
+                                <a  id="out" data-product="{{item.product.id}}" data-action="remove" class="chg-quantity btn btn-outline-danger mt-auto update-cart add-btn" onclick="reloadq()"  ><i style="color:red;" class="bi bi-dash-circle-fill"></i></a>
                               </div>
                             </div>
                             <script>
   
-                              document.addEventListener("click", function(){
+                              function reloadq(){
                             
                               $("#c{{item.product.id}}").load(location.href + " #c{{item.product.id}}");
                               $("#totalpay").load(location.href + " #totalpay");
                             
                             
-                               });
+                               };
                             
                             
                             </script>
@@ -212,13 +216,14 @@
 </div>
 
 -->
-
+{% if user.is_authenticated %}
 
 <button style="width: 25%;" class="btn btn-success fixed-bottom mb-2 m-1"  data-bs-toggle="modal" data-bs-target="#cart">
   <i class="bi-cart-fill me-1"></i>
   Cart
   <span  id="cart-total" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning" style="font-size:medium ;">{{cartItems}}</span>
 </button>
+{% endif %}
 
 <!-- Section-->
 <style>
@@ -360,8 +365,16 @@
                       </div>
                   </div>
                   <!-- Product actions-->
+                  
+
                   <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                      <div class="text-center"><a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                   
+                      <div class="text-center">
+                        {% if user.is_authenticated %}
+                        <a onclick="reloadFunction()" data-product="{{p.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                        {% else %}
+                        <a data-bs-toggle="modal" class="btn btn-outline-dark mt-auto update-cart add-btn" href="#exampleModalToggle" role="button">SignUp/LogIn</a>
+                        {%endif%}
                         <button class="btn btn-outline-primary" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{p.id}}">View</button>
                       </div>
                   </div>
@@ -416,8 +429,16 @@
                       </div>
                   </div>
                   <!-- Product actions-->
+                  
+
                   <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                      <div class="text-center"><a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                    
+                      <div class="text-center">
+                        {% if user.is_authenticated %}
+                        <a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                        {% else %}
+                        <a data-bs-toggle="modal" class="btn btn-outline-dark mt-auto update-cart add-btn" href="#exampleModalToggle" role="button">SignUp/LogIn</a>
+                        {% endif %}
                         <button class="btn btn-outline-primary" type="button" class="btn" data-bs-toggle="modal" data-bs-target="#box{{product.id}}">View</button>
                       </div>
                   </div>
@@ -485,7 +506,13 @@
 
 
                     <div class="d-flex">
-                      <a  data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>                                  &nbsp;
+                      {% if user.is_authenticated %}
+                      <a onclick="reloadFunction()" data-product="{{product.id}}" data-action="add" class="btn btn-outline-dark mt-auto update-cart add-btn" ><i class="bi-cart-fill me-1"></i>Add to cart</a>
+                      {% else %}
+                      <a data-bs-toggle="modal" class="btn btn-outline-dark mt-auto update-cart add-btn" href="#exampleModalToggle" role="button">SignUp/LogIn</a>
+                      {% endif %}
+
+                                                       &nbsp;
                         <button  type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                     </div>
                     
@@ -520,6 +547,7 @@
                 var option = data.var
                 console.log(option)
                 document.getElementById('final{{item.product.name}}').textContent = option
+                
 
       
     }
